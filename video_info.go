@@ -112,21 +112,20 @@ func (info *VideoInfo) GetThumbnailURL(quality ThumbnailQuality) *url.URL {
 	return u
 }
 
-// Download is a convenience method to download a format to an io.Writer
-func (c *Client) Download(cx context.Context, info *VideoInfo, format *Format, dest io.Writer) error {
+// Download is a convenience method to download a format.
+// The ReadCloser has to be closed after reading!
+func (c *Client) Download(cx context.Context, info *VideoInfo, format *Format) (io.ReadCloser, error) {
 	u, err := c.GetDownloadURL(cx, info, format)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	resp, err := c.httpGetAndCheckResponse(cx, u.String())
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	defer resp.Body.Close()
-	_, err = io.Copy(dest, resp.Body)
-	return err
+	return resp.Body, nil
 }
 
 var (

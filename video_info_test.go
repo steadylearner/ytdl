@@ -2,7 +2,7 @@ package ytdl
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/url"
 	"testing"
 	"time"
@@ -176,15 +176,26 @@ func TestGetDownloadURL(t *testing.T) {
 }
 
 func TestDownloadVideo(t *testing.T) {
+	require := require.New(t)
 	client := newTestClient(t)
 	info, err := client.GetVideoInfo(context.Background(), "https://www.youtube.com/watch?v=FrG4TEcSuRg")
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(err)
+
 	format := info.Formats.Worst(FormatResolutionKey)[0]
-	err = client.Download(context.Background(), info, format, ioutil.Discard)
-	if err != nil {
-		t.Error(err)
+	r, err := client.Download(context.Background(), info, format)
+	require.NoError(err)
+	defer r.Close()
+
+	// Read the whole stream
+	for {
+		var buf [1024 * 64]byte
+		_, err := r.Read(buf[:])
+		if err != nil {
+			if err != io.EOF {
+				require.NoError(err)
+			}
+			break
+		}
 	}
 }
 
