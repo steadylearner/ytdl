@@ -73,12 +73,6 @@ type playerResponse struct {
 	} `json:"microformat"`
 }
 
-type representation struct {
-	Itag   int    `xml:"id,attr"`
-	Height int    `xml:"height,attr"`
-	URL    string `xml:"BaseURL"`
-}
-
 func getMetaDataRow(row *jsonquery.Node) (string, string) {
 	title, _ := jsonquery.Query(row, "title")
 	text, _ := jsonquery.Query(row, "contents//simpleText")

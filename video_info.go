@@ -99,8 +99,8 @@ func (c *Client) GetVideoInfoFromID(cx context.Context, id string) (*VideoInfo, 
 }
 
 // GetDownloadURL gets the download url for a format
-func (c *Client) GetDownloadURL(cx context.Context, info *VideoInfo, format *Format) (*url.URL, error) {
-	return c.getDownloadURL(cx, format, info.htmlPlayerFile)
+func (c *Client) GetDownloadURL(ctx context.Context, info *VideoInfo, format *Format) (*url.URL, error) {
+	return c.getDownloadURL(ctx, format, info.htmlPlayerFile)
 }
 
 // GetThumbnailURL returns a url for the thumbnail image
@@ -112,13 +112,13 @@ func (info *VideoInfo) GetThumbnailURL(quality ThumbnailQuality) *url.URL {
 }
 
 // Download is a convenience method to download a format to an io.Writer
-func (c *Client) Download(cx context.Context, info *VideoInfo, format *Format, dest io.Writer) error {
-	u, err := c.GetDownloadURL(cx, info, format)
+func (c *Client) Download(ctx context.Context, info *VideoInfo, format *Format, dest io.Writer) error {
+	u, err := c.GetDownloadURL(ctx, info, format)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.httpGetAndCheckResponse(cx, u.String())
+	resp, err := c.httpGetAndCheckResponse(ctx, u.String())
 	if err != nil {
 		return err
 	}

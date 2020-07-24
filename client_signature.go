@@ -60,7 +60,7 @@ func (c *Client) getDownloadURL(cx context.Context, format *Format, htmlPlayerFi
 
 func decipherTokens(tokens []string, sig string) string {
 	var pos int
-	sigSplit := strings.Split(sig, "")
+	sigSplit := []byte(sig)
 	for i, l := 0, len(tokens); i < l; i++ {
 		tok := tokens[i]
 		if len(tok) > 1 {
@@ -69,7 +69,7 @@ func decipherTokens(tokens []string, sig string) string {
 		}
 		switch string(tok[0]) {
 		case "r":
-			reverseStringSlice(sigSplit)
+			reverseByteSlice(sigSplit)
 		case "w":
 			s := sigSplit[0]
 			sigSplit[0] = sigSplit[pos]
@@ -80,7 +80,7 @@ func decipherTokens(tokens []string, sig string) string {
 			sigSplit = sigSplit[pos:]
 		}
 	}
-	return strings.Join(sigSplit, "")
+	return string(sigSplit)
 }
 
 const (
@@ -99,24 +99,26 @@ const (
 		"\\}"
 )
 
-var actionsObjRegexp = regexp.MustCompile(fmt.Sprintf(
-	"var (%s)=\\{((?:(?:%s%s|%s%s|%s%s|%s%s),?\\n?)+)\\};", jsvarStr, jsvarStr, reverseStr, jsvarStr, sliceStr, jsvarStr, spliceStr, jsvarStr, swapStr))
+var (
+	actionsObjRegexp = regexp.MustCompile(fmt.Sprintf(
+		"var (%s)=\\{((?:(?:%s%s|%s%s|%s%s|%s%s),?\\n?)+)\\};", jsvarStr, jsvarStr, reverseStr, jsvarStr, sliceStr, jsvarStr, spliceStr, jsvarStr, swapStr))
 
-var actionsFuncRegexp = regexp.MustCompile(fmt.Sprintf(
-	"function(?: %s)?\\(a\\)\\{"+
-		"a=a\\.split\\(\"\"\\);\\s*"+
-		"((?:(?:a=)?%s\\.%s\\(a,\\d+\\);)+)"+
-		"return a\\.join\\(\"\"\\)"+
-		"\\}", jsvarStr, jsvarStr, jsvarStr))
+	actionsFuncRegexp = regexp.MustCompile(fmt.Sprintf(
+		"function(?: %s)?\\(a\\)\\{"+
+			"a=a\\.split\\(\"\"\\);\\s*"+
+			"((?:(?:a=)?%s\\.%s\\(a,\\d+\\);)+)"+
+			"return a\\.join\\(\"\"\\)"+
+			"\\}", jsvarStr, jsvarStr, jsvarStr))
 
-var reverseRegexp = regexp.MustCompile(fmt.Sprintf(
-	"(?m)(?:^|,)(%s)%s", jsvarStr, reverseStr))
-var sliceRegexp = regexp.MustCompile(fmt.Sprintf(
-	"(?m)(?:^|,)(%s)%s", jsvarStr, sliceStr))
-var spliceRegexp = regexp.MustCompile(fmt.Sprintf(
-	"(?m)(?:^|,)(%s)%s", jsvarStr, spliceStr))
-var swapRegexp = regexp.MustCompile(fmt.Sprintf(
-	"(?m)(?:^|,)(%s)%s", jsvarStr, swapStr))
+	reverseRegexp = regexp.MustCompile(fmt.Sprintf(
+		"(?m)(?:^|,)(%s)%s", jsvarStr, reverseStr))
+	sliceRegexp = regexp.MustCompile(fmt.Sprintf(
+		"(?m)(?:^|,)(%s)%s", jsvarStr, sliceStr))
+	spliceRegexp = regexp.MustCompile(fmt.Sprintf(
+		"(?m)(?:^|,)(%s)%s", jsvarStr, spliceStr))
+	swapRegexp = regexp.MustCompile(fmt.Sprintf(
+		"(?m)(?:^|,)(%s)%s", jsvarStr, swapStr))
+)
 
 func (c *Client) getSigTokens(cx context.Context, htmlPlayerFile string) ([]string, error) {
 	u, _ := url.Parse(youtubeBaseURL)
@@ -162,6 +164,7 @@ func (c *Client) getSigTokens(cx context.Context, htmlPlayerFile string) ([]stri
 	if err != nil {
 		return nil, err
 	}
+
 	results := regex.FindAllStringSubmatch(funcBody, -1)
 	var tokens []string
 	for _, s := range results {

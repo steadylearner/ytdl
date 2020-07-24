@@ -5,17 +5,19 @@ package ytdl
 // ThumbnailQuality is a youtube thumbnail quality option
 type ThumbnailQuality string
 
-// ThumbnailQualityHigh is the high quality thumbnail jpg
-const ThumbnailQualityHigh ThumbnailQuality = "hqdefault"
+const (
+	// ThumbnailQualityHigh is the high quality thumbnail jpg
+	ThumbnailQualityHigh ThumbnailQuality = "hqdefault"
 
-// ThumbnailQualityDefault is the default quality thumbnail jpg
-const ThumbnailQualityDefault ThumbnailQuality = "default"
+	// ThumbnailQualityDefault is the default quality thumbnail jpg
+	ThumbnailQualityDefault ThumbnailQuality = "default"
 
-// ThumbnailQualityMedium is the medium quality thumbnail jpg
-const ThumbnailQualityMedium ThumbnailQuality = "mqdefault"
+	// ThumbnailQualityMedium is the medium quality thumbnail jpg
+	ThumbnailQualityMedium ThumbnailQuality = "mqdefault"
 
-// ThumbnailQualitySD is the standard def quality thumbnail jpg
-const ThumbnailQualitySD ThumbnailQuality = "sddefault"
+	// ThumbnailQualitySD is the standard def quality thumbnail jpg
+	ThumbnailQualitySD ThumbnailQuality = "sddefault"
 
-// ThumbnailQualityMaxRes is the maximum resolution quality jpg
-const ThumbnailQualityMaxRes ThumbnailQuality = "maxresdefault"
+	// ThumbnailQualityMaxRes is the maximum resolution quality jpg
+	ThumbnailQualityMaxRes ThumbnailQuality = "maxresdefault"
+)
